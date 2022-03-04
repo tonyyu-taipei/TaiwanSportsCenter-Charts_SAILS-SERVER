@@ -1,5 +1,5 @@
 {
-  "name": "gym-stats-server",
+  "name": "taiwan-sports-center-charts_sails-server",
   "type": "commonjs",
   "private": true,
   "version": "0.0.0",
@@ -27,9 +27,9 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/shinningyu/gym-stats-server.git"
+    "url": "git://github.com/tonyyu-taipei/TaiwanSportsCenter-Charts_SAILS-SERVER.git"
   },
-  "author": "shinningyu",
+  "author": "tonyyu",
   "license": "",
   "engines": {
     "node": "^16.13"
