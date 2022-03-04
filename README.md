@@ -3,7 +3,7 @@
 [系統網址](https://tonyyu.taipei/gym-stats)
 [Changelog與Known Bugs](https://hackmd.io/@x9VPntxwQemm0h5ceTvAJw/rJrxViL0F)
 
-網站架構含此[客戶端](https://github.com/tonyyu-taipei/TaiwanSportsCenter-Charts_CLIENT)、Sails.js後端與[資料庫抓取程式](https://github.com/tonyyu-taipei/TaiwanSportsCenter-Charts_FETCH-SERVER)（共三個程式）
+網站架構含[客戶端](https://github.com/tonyyu-taipei/TaiwanSportsCenter-Charts_CLIENT)、Sails.js後端（此Repo）與[資料庫抓取程式](https://github.com/tonyyu-taipei/TaiwanSportsCenter-Charts_FETCH-SERVER)（共三個程式）
 
 資料庫使用MongoDB
 
