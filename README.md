@@ -1,4 +1,4 @@
-# 運動中心健身房圖表查詢系統（Sails後端API）
+# 健身房圖表查詢系統（Sails後端API）
 
 [系統網址](https://tonyyu.taipei/gym-stats)
 [Changelog與Known Bugs](https://hackmd.io/@x9VPntxwQemm0h5ceTvAJw/rJrxViL0F)
@@ -40,7 +40,7 @@ MONGODB=你的MongoDB連結
 	},
 ]
 ```
-short為運動中心縮寫、peoNum為當下人數、maxPeo為最多人數
+short為健身房縮寫、peoNum為當下人數、maxPeo為最多人數
 
 2. /data/date：將抓取所有資料之日期與時間（上方time）
 ```json
