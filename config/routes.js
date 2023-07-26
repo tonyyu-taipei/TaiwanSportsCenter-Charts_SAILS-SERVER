@@ -13,5 +13,9 @@ module.exports.routes = {
     "GET /data/date":{
         controller:"DataController",
         action:"date"
+    },
+    "GET /data/date1":{
+        controller:"DataController",
+        action:"date1"
     }
 };
