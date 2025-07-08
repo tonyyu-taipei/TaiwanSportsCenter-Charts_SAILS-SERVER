@@ -361,11 +361,11 @@ module.exports = {
   * > https://sailsjs.com/config/*#?sailsconfigssl                          *
   *                                                                         *
   **************************************************************************/
-   ssl: {
-    ca: require('fs').readFileSync(require('path').resolve("/etc/webmin/letsencrypt-ca.pem")),
-    key: require('fs').readFileSync(require('path').resolve('/etc/webmin/letsencrypt-key.pem')),
-    cert: require('fs').readFileSync(require('path').resolve("/etc/webmin/letsencrypt-cert.pem"))
-  },
+  //  ssl: {
+  //   ca: require('fs').readFileSync(require('path').resolve("/etc/webmin/letsencrypt-ca.pem")),
+  //   key: require('fs').readFileSync(require('path').resolve('/etc/webmin/letsencrypt-key.pem')),
+  //   cert: require('fs').readFileSync(require('path').resolve("/etc/webmin/letsencrypt-cert.pem"))
+  // },
 
 
   /**************************************************************************
@@ -377,7 +377,7 @@ module.exports = {
   *                                                                         *
   ***************************************************************************/
   custom: {
-    baseUrl: 'https://tonyyu.taipei:1337',
+    baseUrl: 'https://tonyyu.taipei/sports_center_api/',
     internalEmailAddress: 'support@example.com',
 
     // sendgridSecret: 'SG.fake.3e0Bn0qSQVnwb1E4qNPz9JZP5vLZYqjh7sn8S93oSHU',

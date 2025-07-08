@@ -39,50 +39,28 @@ module.exports = {
         }
       });
     }else{
-    //   let db = Data.getDatastore().manager;
-    //   db.collection(Data.tableName).aggregate([
-    //     {$match:{
-    //       time:{
-    //         $gt: new Date("2021-01-01T12:01:07Z")
-    //       }
-    //     }}
-    //     ,
-    //     { $addFields:  {
-    //          date_string: { $dateToString: { format: "%Y-%m-%d", date: "$date" } }
-    //        }
-    //     },
-    //     { $sort: { date: -1 } },
-    //     { $group: {
-    //         _id: "$date_string",
-    //         my_doc: { $first: "$$ROOT" }
-    //       }
-    //     },
-    //     { $replaceRoot: { newRoot: "$my_doc" } },
-    //     { $project: { date_string: 0 } }, 
-    //     { $sort: { date: 1 } },
-    // ],{ allowDiskUse: true }).toArray((err, result)=>{
-    //   if(err){
-    //     res.send(500, { error: 'database error' });
-    //     console.error(err)
-    //     res.end();
-    //   }else{
-    //     res.send(result);
-    //     res.end();
-    //   } 
-    // })
-
-
-      Data.find({}).exec((err,result)=>{
-
-        if(err)
+      const db = Data.getDatastore().manager;
+      const pipeline = [
         {
-          res.send(500,{error:"database error"});
-          res.end();
+          $group: {
+            _id: { $dateToString: { format: '%Y-%m-%d', date: '$time' } },
+            firstTime: { $first: '$time' }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            time: '$firstTime'
+          }
+        },
+        { $sort: { time: 1 } }
+      ];
+      db.collection(Data.tableName).aggregate(pipeline).toArray((err, result)=>{
+        if(err) {
+          res.send(500,{error:'database error',err});
+          return res.end();
         }
-        let allDate = [];
-        for(data of result){
-          allDate.push(data.time);
-        }
+        const allDate = result.map(doc => doc.time);
         res.send(allDate);
         res.end();
       });
