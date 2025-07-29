@@ -42,8 +42,13 @@ module.exports = {
       const db = Data.getDatastore().manager;
       const pipeline = [
         {
+          $addFields: {
+            taiwanTime: { $add: ['$time', 8 * 60 * 60 * 1000] }
+          }
+        },
+        {
           $group: {
-            _id: { $dateToString: { format: '%Y-%m-%d', date: '$time' } },
+            _id: { $dateToString: { format: '%Y-%m-%d', date: '$taiwanTime' } },
             firstTime: { $first: '$time' }
           }
         },
