@@ -9,13 +9,15 @@
  */
 
 module.exports.routes = {
-    "GET /":"home/index",
-    "GET /data/date":{
-        controller:"DataController",
-        action:"date"
-    },
-    "GET /data/date1":{
-        controller:"DataController",
-        action:"date1"
-    }
+  'GET /': 'home/index',
+  'GET /data/date': {
+    controller: 'DataController',
+    action: 'date'
+  },
+  'GET /data/date1': {
+    controller: 'DataController',
+    action: 'date1'
+  },
+  'GET /data': { action: 'data/find' },
+  'GET /locations': { action: 'locations/find' }
 };
