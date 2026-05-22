@@ -1,4 +1,5 @@
 # 健身房圖表查詢系統（Sails後端API）
+此為Vibe Coding版本，無嚴謹測試，如要主要版本，請見github master分支。
 
 [系統網址](https://tonyyu.taipei/gym-stats)  
 [Changelog與Known Bugs](https://hackmd.io/@x9VPntxwQemm0h5ceTvAJw/rJrxViL0F)
