@@ -34,8 +34,10 @@ module.exports.bootstrap = async function() {
     sails.log.info('Triggering XGBoost gym occupancy retraining pipeline...');
     const pythonScript = path.join(sails.config.appPath, 'Python', 'train_predict.py');
     
-    // Check if python3 is available, else fallback to python
-    const child = spawn('python3', [pythonScript]);
+    // Check if custom python binary is specified in environment variables (e.g. from virtual env), else fallback to python3
+    const pythonBin = process.env.PYTHON_BIN || 'python3';
+    sails.log.info(`Spawning Python process with binary: ${pythonBin}`);
+    const child = spawn(pythonBin, [pythonScript]);
     
     child.stdout.on('data', (data) => {
       sails.log.debug(`[XGBoost Pipeline STDOUT]: ${data.toString().trim()}`);
