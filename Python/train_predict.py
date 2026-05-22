@@ -303,15 +303,20 @@ def fetch_weather_data(coords):
             for day_idx, date_str in enumerate(times):
                 try:
                     p_sum = precip[day_idx] if (day_idx < len(precip) and precip[day_idx] is not None) else 0.0
-                    # Categorize subjective precipitation: 0 = None, 1 = Light, 2 = Moderate, 3 = Heavy
+                    # Categorize subjective precipitation (0 to 5) aligned with CWA definitions:
+                    # 0: 無降雨, 1: 微量降雨 (<= 2mm), 2: 小雨 (<= 10mm), 3: 中雨 (<= 40mm), 4: 大雨 (<= 80mm), 5: 豪大雨 (> 80mm)
                     if p_sum == 0:
                         p_cat = 0
                     elif p_sum <= 2.0:
                         p_cat = 1
                     elif p_sum <= 10.0:
                         p_cat = 2
-                    else:
+                    elif p_sum <= 40.0:
                         p_cat = 3
+                    elif p_sum <= 80.0:
+                        p_cat = 4
+                    else:
+                        p_cat = 5
                         
                     weather_by_loc[short][date_str] = {
                         'max_temp': t_max[day_idx] if (day_idx < len(t_max) and t_max[day_idx] is not None) else 25.0,
@@ -377,7 +382,7 @@ def compute_prediction_metadata(X_pred, contribs, weather_data, df_pred_original
         if weather_data and loc in weather_data:
             w = weather_data[loc].get(dt_str)
         if w:
-            p_cat_map = {0: '無降雨', 1: '微量降雨', 2: '短暫陣雨', 3: '豪大雨'}
+            p_cat_map = {0: '無降雨', 1: '微量降雨', 2: '小雨', 3: '中雨', 4: '大雨', 5: '豪大雨'}
             weather_info = {
                 'temp': float(w['avg_temp']),
                 'min_temp': float(w['min_temp']),
@@ -460,11 +465,31 @@ def build_features(df, weather_data=None):
             precip_sums.append(w['precipitation_sum'])
             precip_cats.append(w['precipitation_category'])
         else:
-            max_temps.append(25.0)
-            min_temps.append(18.0)
-            avg_temps.append(22.0)
-            precip_sums.append(0.0)
-            precip_cats.append(0)
+            # Fallback to local row fields if available, e.g. from local CSV
+            row_max = row.get('max_temp', 25.0)
+            row_min = row.get('min_temp', 18.0)
+            row_avg = row.get('avg_temp', 22.0)
+            
+            p_sum = row.get('precipitation_sum', row.get('precipitation', 0.0))
+            if pd.isna(p_sum):
+                p_sum = 0.0
+                
+            p_cat = row.get('precipitation_category', None)
+            if p_cat is None or pd.isna(p_cat):
+                sub_p_cat = row.get('subjective_precipitation_category', None)
+                if sub_p_cat is not None and not pd.isna(sub_p_cat):
+                    # Map old (0,1,2,3) to new (0,1,2,3,4,5)
+                    p_cat = int(sub_p_cat)
+                else:
+                    p_cat = 0
+            else:
+                p_cat = int(p_cat)
+                
+            max_temps.append(row_max if not pd.isna(row_max) else 25.0)
+            min_temps.append(row_min if not pd.isna(row_min) else 18.0)
+            avg_temps.append(row_avg if not pd.isna(row_avg) else 22.0)
+            precip_sums.append(p_sum)
+            precip_cats.append(p_cat)
             
     df['max_temp'] = max_temps
     df['min_temp'] = min_temps
