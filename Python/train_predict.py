@@ -400,7 +400,7 @@ def compute_prediction_metadata(X_pred, contribs, weather_data, df_pred_original
             total_abs += val
             
         if total_abs > 0:
-            cat_pcts = {k: round((v / total_abs) * 100, 1) for k, v in cat_vals.items()}
+            cat_pcts = {k: float(round((v / total_abs) * 100, 1)) for k, v in cat_vals.items()}
             dom_cat = max(cat_vals, key=cat_vals.get)
             dom_pct = cat_pcts[dom_cat]
             dominant_factor = f"{dom_cat} ({dom_pct}%)"
