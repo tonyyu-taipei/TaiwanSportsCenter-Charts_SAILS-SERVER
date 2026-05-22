@@ -1,0 +1,280 @@
+[{
+  "_id": {
+    "$oid": "61e5499321650236cb94f8eb"
+  },
+  "short": "JJSC",
+  "name": "中正",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.038503770429518,
+      121.51949418719418
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "61e5499321650236cb94f8ef"
+  },
+  "short": "SSSC",
+  "name": "松山",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.048783334755754,
+      121.55066365075314
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "61e5499321650236cb94f8f1"
+  },
+  "short": "WSSC",
+  "name": "文山",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      24.99709705284272,
+      121.55944417115383
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "61e5499321650236cb94f8e8"
+  },
+  "short": "BTSC",
+  "name": "北投",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.116680524062712,
+      121.50984866178037
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "61e5499321650236cb94f8ed"
+  },
+  "short": "NHSC",
+  "name": "內湖",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.078093519287712,
+      121.57485073215744
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "61e5499321650236cb94f8ee"
+  },
+  "short": "SLSC",
+  "name": "士林",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.089534340199663,
+      121.52153011345438
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "61e5499321650236cb94f8f3"
+  },
+  "short": "ZSSC",
+  "name": "中山",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.054940560053797,
+      121.52139874601724
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "61e5499321650236cb94f8ea"
+  },
+  "short": "DTSC",
+  "name": "大同",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.065373001228142,
+      121.51619538330402
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "61e5499321650236cb94f8ec"
+  },
+  "short": "NGSC",
+  "name": "南港",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.048895357115676,
+      121.5822183230574
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "61e95aa7d216ff1db48599c8"
+  },
+  "short": "LKSC",
+  "name": "林口",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.08605178277618,
+      121.38069004651747
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "61e95cd5fe0339a39e494874"
+  },
+  "short": "TYSC",
+  "name": "桃園",
+  "position": {
+    "coordinates": [
+      24.998176299798217,
+      121.32095973337412
+    ],
+    "type": "Point"
+  }
+},
+{
+  "_id": {
+    "$oid": "61f7c944463f398c32b4f028"
+  },
+  "short": "SCSC",
+  "name": "三重",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.054858630093257,
+      121.48798413519566
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "61f930d4d36720b77bcf752c"
+  },
+  "short": "LZSC",
+  "name": "蘆洲",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.091218321258577,
+      121.46270553476558
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "61f963b4d36720b77bcf752d"
+  },
+  "short": "XZSC",
+  "name": "新莊",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.039863038757204,
+      121.44781131945396
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "62562d1b743c765676527b55"
+  },
+  "short": "PQFN",
+  "name": "PQ 芝山",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.10488398242063,
+      121.52721052567833
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "62566938b1f71188a4a8f885"
+  },
+  "short": "RFFN",
+  "name": "Refine 士林",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.09617239509192,
+      121.52864247454156
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "625925b36fd4d72d4abae504"
+  },
+  "short": "ZBSC",
+  "name": "竹北",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      24.820834246825903,
+      121.02150322837231
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "64be97e94cffdc886767d4ff"
+  },
+  "short": "NTSC",
+  "name": "南屯",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      24.137889728432267,
+      120.63763790939073
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "64be98134cffdc886767d500"
+  },
+  "short": "CMSC",
+  "name": "朝馬",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      24.167899993952233,
+      120.63391983374089
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "69aeff060417f6aa3e8eaa3f"
+  },
+  "short": "SJRF",
+  "name": "Refine 松江",
+  "position": {
+    "type": "Point",
+    "coordinates": [
+      25.051789057545957,
+      121.53200024977771
+    ]
+  }
+}]

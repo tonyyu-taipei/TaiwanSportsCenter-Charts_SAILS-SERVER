@@ -18,6 +18,10 @@ module.exports.routes = {
     controller: 'DataController',
     action: 'date1'
   },
+  'GET /data/prediction': {
+    controller: 'DataController',
+    action: 'prediction'
+  },
   'GET /data': { action: 'data/find' },
   'GET /locations': { action: 'locations/find' }
 };

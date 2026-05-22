@@ -134,3 +134,4 @@ lib-cov
 .env
 *.DS_Store
 .editorconfig
+deployment_guide.md
