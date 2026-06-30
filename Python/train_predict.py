@@ -30,7 +30,7 @@ load_env(os.path.join(sails_root, '.env'))
 # Define locations list
 ALL_LOCATIONS = [
     'JJSC', 'SSSC', 'WSSC', 'BTSC', 'NHSC', 'SLSC', 'ZSSC', 'DTSC', 'NGSC', 'LKSC',
-    'TYSC', 'SCSC', 'LZSC', 'XZSC', 'PQFN', 'RFFN', 'ZBSC', 'NTSC', 'CMSC', 'SJRF'
+    'TYSC', 'SCSC', 'LZSC', 'XZSC', 'PQFN', 'RFFN', 'ZBSC', 'NTSC', 'CMSC', 'SJRF', 'FF053'
 ]
 
 # Cache for holiday data
