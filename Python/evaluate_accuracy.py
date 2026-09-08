@@ -123,7 +123,8 @@ def evaluate_all(days_list=[7, 14, 30], tolerance_list=[3, 5, 10], save_to_db=Fa
         active_mae = float(round(active_df['abs_error'].mean(), 2)) if not active_df.empty else mae
         active_rmse = float(round(np.sqrt(active_df['squared_error'].mean()), 2)) if not active_df.empty else rmse
 
-        peak_df = test_df[(test_df['hour'] >= 17) & (test_df['hour'] <= 21)]
+        # 尖峰時段 (18:00 ~ 21:00)，與前端晚尖定義保持一致
+        peak_df = test_df[(test_df['hour'] >= 18) & (test_df['hour'] <= 21)]
         peak_mae = float(round(peak_df['abs_error'].mean(), 2)) if not peak_df.empty else active_mae
 
         hit_rates = {}
@@ -138,8 +139,10 @@ def evaluate_all(days_list=[7, 14, 30], tolerance_list=[3, 5, 10], save_to_db=Fa
         locations_metrics = []
         for loc, grp in test_df.groupby('location'):
             loc_active = grp[(grp['hour'] >= 6) & (grp['hour'] <= 22)]
+            loc_peak = grp[(grp['hour'] >= 18) & (grp['hour'] <= 21)]
             l_mae = float(round(grp['abs_error'].mean(), 2))
             l_act_mae = float(round(loc_active['abs_error'].mean(), 2)) if not loc_active.empty else l_mae
+            l_peak_mae = float(round(loc_peak['abs_error'].mean(), 2)) if not loc_peak.empty else l_act_mae
             l_hit5 = float(round((loc_active['abs_error'] <= 5).mean() * 100, 1)) if not loc_active.empty else 0.0
             l_hit3 = float(round((loc_active['abs_error'] <= 3).mean() * 100, 1)) if not loc_active.empty else 0.0
 
@@ -148,6 +151,7 @@ def evaluate_all(days_list=[7, 14, 30], tolerance_list=[3, 5, 10], save_to_db=Fa
                 'sampleCount': int(len(grp)),
                 'allDayMae': l_mae,
                 'activeHoursMae': l_act_mae,
+                'peakHoursMae': l_peak_mae,
                 'hitRateWithin5': l_hit5,
                 'hitRateWithin3': l_hit3
             })
