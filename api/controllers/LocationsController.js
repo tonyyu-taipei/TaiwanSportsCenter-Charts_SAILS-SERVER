@@ -10,7 +10,7 @@ module.exports = {
     find: async function (req, res) {
         try {
             const locations = await Locations.find();
-            return res.locations();
+            return res.json(locations);
         } catch (err) {
             return res.serverError(err);
         }
