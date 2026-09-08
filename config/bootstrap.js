@@ -50,8 +50,33 @@ module.exports.bootstrap = async function() {
     child.on('close', (code) => {
       if (code === 0) {
         sails.log.info('XGBoost gym occupancy prediction retraining completed successfully.');
+        // Retraining 完成後，自動執行評估並儲存快照
+        runAccuracyEvaluation();
       } else {
         sails.log.error(`XGBoost retraining pipeline failed with exit code ${code}.`);
+      }
+    });
+  }
+
+  function runAccuracyEvaluation() {
+    sails.log.info('Triggering accuracy evaluation and saving snapshot...');
+    const evalScript = path.join(sails.config.appPath, 'Python', 'evaluate_accuracy.py');
+    const pythonBin = process.env.PYTHON_BIN || 'python3';
+    const evalChild = spawn(pythonBin, [evalScript, '--days', '7', '--save']);
+
+    evalChild.stdout.on('data', (data) => {
+      sails.log.debug(`[Accuracy Evaluation STDOUT]: ${data.toString().trim()}`);
+    });
+
+    evalChild.stderr.on('data', (data) => {
+      sails.log.error(`[Accuracy Evaluation STDERR]: ${data.toString().trim()}`);
+    });
+
+    evalChild.on('close', (evalCode) => {
+      if (evalCode === 0) {
+        sails.log.info('Accuracy evaluation completed and saved snapshot successfully.');
+      } else {
+        sails.log.error(`Accuracy evaluation exited with code ${evalCode}.`);
       }
     });
   }

@@ -23,5 +23,9 @@ module.exports.routes = {
     action: 'prediction'
   },
   'GET /data': { action: 'data/find' },
-  'GET /locations': { action: 'locations/find' }
+  'GET /locations': 'LocationsController.find',
+  'GET /data/accuracy': {
+    controller: 'DataController',
+    action: 'accuracy'
+  }
 };

@@ -219,5 +219,80 @@ module.exports = {
         return res.status(500).json({ error: 'database error', details: err });
       }
     }
+  },
+
+  accuracy: async function (req, res) {
+    const fs = require('fs');
+    const path = require('path');
+
+    const getBackupEvaluation = () => {
+      const backupPath = path.join(sails.config.appPath, 'Python', 'accuracy_evaluation.json');
+      try {
+        if (fs.existsSync(backupPath)) {
+          const raw = fs.readFileSync(backupPath, 'utf-8');
+          return JSON.parse(raw);
+        }
+      } catch (e) {
+        sails.log.error('Failed to read accuracy_evaluation backup JSON:', e);
+      }
+      return null;
+    };
+
+    let db;
+    try {
+      db = Data.getDatastore().manager;
+    } catch (e) {
+      // Datastore manager failed/disconnected
+    }
+
+    if (!db) {
+      const backup = getBackupEvaluation();
+      if (backup) {
+        return res.json(backup);
+      }
+      return res.status(500).json({ error: 'database not available and no backup found' });
+    }
+
+    const testDays = parseInt(req.param('days') || '7', 10);
+
+    try {
+      // 嘗試從 MongoDB accuracy_evaluation collection 讀取評估快照
+      const record = await db.collection('accuracy_evaluation').findOne(
+        { testDays: testDays },
+        { sort: { evaluatedAt: -1 } }
+      );
+
+      if (record) {
+        delete record._id;
+        return res.json(record);
+      }
+
+      // 如果找不到特定天數，抓取最新的一筆評估紀錄
+      const latest = await db.collection('accuracy_evaluation').findOne(
+        {},
+        { sort: { evaluatedAt: -1 } }
+      );
+
+      if (latest) {
+        delete latest._id;
+        return res.json(latest);
+      }
+
+      // 若 DB 尚未產生紀錄，讀取本地備份
+      const backup = getBackupEvaluation();
+      if (backup) {
+        return res.json(backup);
+      }
+
+      return res.status(404).json({
+        message: 'No accuracy evaluation data available yet. Please trigger evaluate_accuracy.py first.'
+      });
+    } catch (err) {
+      const backup = getBackupEvaluation();
+      if (backup) {
+        return res.json(backup);
+      }
+      return res.status(500).json({ error: 'database error', details: err });
+    }
   }
 };

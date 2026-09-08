@@ -135,3 +135,10 @@ lib-cov
 *.DS_Store
 .editorconfig
 deployment_guide.md
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
