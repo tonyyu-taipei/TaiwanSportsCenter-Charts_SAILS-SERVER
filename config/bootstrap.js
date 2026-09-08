@@ -62,7 +62,7 @@ module.exports.bootstrap = async function() {
     sails.log.info('Triggering accuracy evaluation and saving snapshot...');
     const evalScript = path.join(sails.config.appPath, 'Python', 'evaluate_accuracy.py');
     const pythonBin = process.env.PYTHON_BIN || 'python3';
-    const evalChild = spawn(pythonBin, [evalScript, '--days', '7', '--save']);
+    const evalChild = spawn(pythonBin, [evalScript, '--days', '7', '14', '30', '--save']);
 
     evalChild.stdout.on('data', (data) => {
       sails.log.debug(`[Accuracy Evaluation STDOUT]: ${data.toString().trim()}`);

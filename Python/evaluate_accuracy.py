@@ -30,13 +30,13 @@ from Python.train_predict import (
     ALL_LOCATIONS
 )
 
-def evaluate(test_days=7, tolerance_list=[3, 5, 10], save_to_db=False, output_json=False):
+def evaluate_all(days_list=[7, 14, 30], tolerance_list=[3, 5, 10], save_to_db=False, output_json=False):
     if not output_json:
         print("=" * 70)
-        print(f"🚀 開始回測驗證：評估最近 {test_days} 天的人流預測準確度")
+        print(f"🚀 開始回測驗證：評估天數 {days_list}")
         print("=" * 70)
 
-    # 1. 載入資料
+    # 1. 載入資料 (只做一次，節省資源)
     df_raw, db = load_data()
     if df_raw.empty:
         if output_json:
@@ -53,185 +53,171 @@ def evaluate(test_days=7, tolerance_list=[3, 5, 10], save_to_db=False, output_js
         print("📊 建立特徵工程特徵...")
     df_features = build_features(df_clean, weather_data=weather_data)
 
-    # 排除剛開始因 Lag 產生的缺失值
     df_valid = df_features.dropna(subset=['peoNum', 'lag_last_week']).copy()
     if len(df_valid) < 500:
         df_valid = df_features.dropna(subset=['peoNum', 'lag_yesterday']).copy()
 
-    # 2. 時間切分 (Time-based Train/Test Split)
     max_time = df_valid['time'].max()
-    split_time = max_time - pd.Timedelta(days=test_days)
-    
-    if not output_json:
-        print(f"📅 資料集總時間區間: {df_valid['time'].min()} ~ {max_time}")
-        print(f"✂️ 訓練集截止時間 : < {split_time}")
-        print(f"🎯 測試集驗證時間 : >= {split_time} 至 {max_time} (共 {test_days} 天)")
+    all_results = {}
 
-    train_df = df_valid[df_valid['time'] < split_time].copy()
-    test_df = df_valid[df_valid['time'] >= split_time].copy()
+    for test_days in days_list:
+        if not output_json:
+            print("-" * 70)
+            print(f"⏱️ 評估最近 {test_days} 天表現...")
+            print("-" * 70)
 
-    if test_df.empty or train_df.empty:
-        if output_json:
-            print(json.dumps({"error": "訓練集或測試集樣本不足"}))
-        else:
-            print("❌ 訓練集或測試集樣本不足，請縮減 test_days 或檢查資料庫筆數。")
-        return None
+        split_time = max_time - pd.Timedelta(days=test_days)
+        train_df = df_valid[df_valid['time'] < split_time].copy()
+        test_df = df_valid[df_valid['time'] >= split_time].copy()
 
-    # 3. One-hot encoding for locations
-    train_encoded = pd.get_dummies(train_df, columns=['location'], drop_first=False)
-    test_encoded = pd.get_dummies(test_df, columns=['location'], drop_first=False)
+        if test_df.empty or train_df.empty:
+            if not output_json:
+                print(f"⚠️ 針對 {test_days} 天的樣本不足，跳過。")
+            continue
 
-    location_cols = [f"location_{loc}" for loc in ALL_LOCATIONS]
-    for col in location_cols:
-        if col not in train_encoded.columns:
-            train_encoded[col] = 0
-        if col not in test_encoded.columns:
-            test_encoded[col] = 0
+        train_encoded = pd.get_dummies(train_df, columns=['location'], drop_first=False)
+        test_encoded = pd.get_dummies(test_df, columns=['location'], drop_first=False)
 
-    feature_cols = [
-        'Time_sin', 'Time_cos', 'DayOfWeek_sin', 'DayOfWeek_cos', 'is_weekend', 'isHoliday', 'maxPeo',
-        'lag_yesterday', 'lag_2days_ago', 'lag_last_week', 'lag_yesterday_trend',
-        'max_temp', 'min_temp', 'avg_temp', 'precipitation_sum', 'precipitation_category'
-    ] + location_cols
+        location_cols = [f"location_{loc}" for loc in ALL_LOCATIONS]
+        for col in location_cols:
+            if col not in train_encoded.columns:
+                train_encoded[col] = 0
+            if col not in test_encoded.columns:
+                test_encoded[col] = 0
 
-    X_train = train_encoded[feature_cols]
-    y_train = train_encoded['peoNum']
-    X_test = test_encoded[feature_cols]
-    y_test = test_encoded['peoNum']
+        feature_cols = [
+            'Time_sin', 'Time_cos', 'DayOfWeek_sin', 'DayOfWeek_cos', 'is_weekend', 'isHoliday', 'maxPeo',
+            'lag_yesterday', 'lag_2days_ago', 'lag_last_week', 'lag_yesterday_trend',
+            'max_temp', 'min_temp', 'avg_temp', 'precipitation_sum', 'precipitation_category'
+        ] + location_cols
 
-    # 4. 訓練模型
-    if not output_json:
-        print("🧠 正在訓練 XGBoost 回測模型...")
-    model = xgb.XGBRegressor(
-        n_estimators=300,
-        learning_rate=0.05,
-        max_depth=5,
-        subsample=0.8,
-        colsample_bytree=0.8,
-        random_state=42,
-        n_jobs=-1
-    )
-    model.fit(X_train, y_train)
+        X_train = train_encoded[feature_cols]
+        y_train = train_encoded['peoNum']
+        X_test = test_encoded[feature_cols]
+        y_test = test_encoded['peoNum']
 
-    # 5. 預測並評估
-    preds = model.predict(X_test)
-    preds = np.clip(preds, 0, test_df['maxPeo'].values)
-    preds = np.round(preds)
+        model = xgb.XGBRegressor(
+            n_estimators=300,
+            learning_rate=0.05,
+            max_depth=5,
+            subsample=0.8,
+            colsample_bytree=0.8,
+            random_state=42,
+            n_jobs=-1
+        )
+        model.fit(X_train, y_train)
 
-    test_df['predicted'] = preds
-    test_df['abs_error'] = np.abs(test_df['peoNum'] - test_df['predicted'])
-    test_df['squared_error'] = (test_df['peoNum'] - test_df['predicted']) ** 2
+        preds = model.predict(X_test)
+        preds = np.clip(preds, 0, test_df['maxPeo'].values)
+        preds = np.round(preds)
 
-    # 指標計算
-    mae = float(round(test_df['abs_error'].mean(), 2))
-    rmse = float(round(np.sqrt(test_df['squared_error'].mean()), 2))
-    
-    # 營業時段 (06:00 ~ 22:00) 專屬評估 (避免夜間 0 人的虛高命中)
-    test_df['hour'] = test_df['time'].dt.hour
-    active_df = test_df[(test_df['hour'] >= 6) & (test_df['hour'] <= 22)]
-    active_mae = float(round(active_df['abs_error'].mean(), 2)) if not active_df.empty else mae
-    active_rmse = float(round(np.sqrt(active_df['squared_error'].mean()), 2)) if not active_df.empty else rmse
+        test_df['predicted'] = preds
+        test_df['abs_error'] = np.abs(test_df['peoNum'] - test_df['predicted'])
+        test_df['squared_error'] = (test_df['peoNum'] - test_df['predicted']) ** 2
 
-    # 尖峰時段 (17:00 ~ 21:00)
-    peak_df = test_df[(test_df['hour'] >= 17) & (test_df['hour'] <= 21)]
-    peak_mae = float(round(peak_df['abs_error'].mean(), 2)) if not peak_df.empty else active_mae
+        mae = float(round(test_df['abs_error'].mean(), 2))
+        rmse = float(round(np.sqrt(test_df['squared_error'].mean()), 2))
 
-    hit_rates = {}
-    for tol in tolerance_list:
-        rate = float(round((test_df['abs_error'] <= tol).mean() * 100, 1))
-        active_rate = float(round((active_df['abs_error'] <= tol).mean() * 100, 1)) if not active_df.empty else rate
-        hit_rates[f"within_{tol}"] = {
-            "all": rate,
-            "active": active_rate
+        test_df['hour'] = test_df['time'].dt.hour
+        active_df = test_df[(test_df['hour'] >= 6) & (test_df['hour'] <= 22)]
+        active_mae = float(round(active_df['abs_error'].mean(), 2)) if not active_df.empty else mae
+        active_rmse = float(round(np.sqrt(active_df['squared_error'].mean()), 2)) if not active_df.empty else rmse
+
+        peak_df = test_df[(test_df['hour'] >= 17) & (test_df['hour'] <= 21)]
+        peak_mae = float(round(peak_df['abs_error'].mean(), 2)) if not peak_df.empty else active_mae
+
+        hit_rates = {}
+        for tol in tolerance_list:
+            rate = float(round((test_df['abs_error'] <= tol).mean() * 100, 1))
+            active_rate = float(round((active_df['abs_error'] <= tol).mean() * 100, 1)) if not active_df.empty else rate
+            hit_rates[f"within_{tol}"] = {
+                "all": rate,
+                "active": active_rate
+            }
+
+        locations_metrics = []
+        for loc, grp in test_df.groupby('location'):
+            loc_active = grp[(grp['hour'] >= 6) & (grp['hour'] <= 22)]
+            l_mae = float(round(grp['abs_error'].mean(), 2))
+            l_act_mae = float(round(loc_active['abs_error'].mean(), 2)) if not loc_active.empty else l_mae
+            l_hit5 = float(round((loc_active['abs_error'] <= 5).mean() * 100, 1)) if not loc_active.empty else 0.0
+            l_hit3 = float(round((loc_active['abs_error'] <= 3).mean() * 100, 1)) if not loc_active.empty else 0.0
+
+            locations_metrics.append({
+                'short': loc,
+                'sampleCount': int(len(grp)),
+                'allDayMae': l_mae,
+                'activeHoursMae': l_act_mae,
+                'hitRateWithin5': l_hit5,
+                'hitRateWithin3': l_hit3
+            })
+
+        locations_metrics.sort(key=lambda x: x['activeHoursMae'])
+
+        result = {
+            'evaluatedAt': datetime.utcnow().isoformat(),
+            'testDays': test_days,
+            'timeRange': {
+                'start': split_time.isoformat(),
+                'end': max_time.isoformat()
+            },
+            'totalSamples': int(len(test_df)),
+            'summary': {
+                'overallMae': mae,
+                'overallRmse': rmse,
+                'activeHoursMae': active_mae,
+                'activeHoursRmse': active_rmse,
+                'peakHoursMae': peak_mae
+            },
+            'hitRates': hit_rates,
+            'locations': locations_metrics
         }
 
-    # 各場館分析
-    locations_metrics = []
-    for loc, grp in test_df.groupby('location'):
-        loc_active = grp[(grp['hour'] >= 6) & (grp['hour'] <= 22)]
-        l_mae = float(round(grp['abs_error'].mean(), 2))
-        l_act_mae = float(round(loc_active['abs_error'].mean(), 2)) if not loc_active.empty else l_mae
-        l_hit5 = float(round((loc_active['abs_error'] <= 5).mean() * 100, 1)) if not loc_active.empty else 0.0
-        l_hit3 = float(round((loc_active['abs_error'] <= 3).mean() * 100, 1)) if not loc_active.empty else 0.0
-        
-        locations_metrics.append({
-            'short': loc,
-            'sampleCount': int(len(grp)),
-            'allDayMae': l_mae,
-            'activeHoursMae': l_act_mae,
-            'hitRateWithin5': l_hit5,
-            'hitRateWithin3': l_hit3
-        })
+        all_results[test_days] = result
 
-    locations_metrics.sort(key=lambda x: x['activeHoursMae'])
+        # 存入 MongoDB accuracy_evaluation collection
+        if save_to_db and db is not None:
+            try:
+                db['accuracy_evaluation'].replace_one(
+                    {'testDays': test_days},
+                    result,
+                    upsert=True
+                )
+                if not output_json:
+                    print(f"💾 已將 {test_days} 天評估快照存入 MongoDB collection 'accuracy_evaluation'")
+            except Exception as e:
+                if not output_json:
+                    print(f"⚠️ 儲存 {test_days} 天至 MongoDB 失敗: {e}")
 
-    # 封裝結果物件
-    result = {
-        'evaluatedAt': datetime.utcnow().isoformat(),
-        'testDays': test_days,
-        'timeRange': {
-            'start': split_time.isoformat(),
-            'end': max_time.isoformat()
-        },
-        'totalSamples': int(len(test_df)),
-        'summary': {
-            'overallMae': mae,
-            'overallRmse': rmse,
-            'activeHoursMae': active_mae,
-            'activeHoursRmse': active_rmse,
-            'peakHoursMae': peak_mae
-        },
-        'hitRates': hit_rates,
-        'locations': locations_metrics
-    }
-
-    # 儲存快照至 MongoDB 或本機 JSON
-    if save_to_db and db is not None:
+        # 本地快照（支援 accuracy_evaluation_{days}.json 與預設 accuracy_evaluation.json）
         try:
-            db['accuracy_evaluation'].replace_one(
-                {'testDays': test_days},
-                result,
-                upsert=True
-            )
-            if not output_json:
-                print("💾 已將評估快照存入 MongoDB collection 'accuracy_evaluation'")
-        except Exception as e:
-            if not output_json:
-                print(f"⚠️ 儲存至 MongoDB 失敗: {e}")
+            backup_file_days = os.path.join(os.path.dirname(__file__), f'accuracy_evaluation_{test_days}.json')
+            with open(backup_file_days, 'w', encoding='utf-8') as f:
+                json.dump(result, f, ensure_ascii=False, indent=2)
+            if test_days == 7 or len(days_list) == 1:
+                backup_default = os.path.join(os.path.dirname(__file__), 'accuracy_evaluation.json')
+                with open(backup_default, 'w', encoding='utf-8') as f:
+                    json.dump(result, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
 
-    # 本機 backup
-    backup_file = os.path.join(os.path.dirname(__file__), 'accuracy_evaluation.json')
-    try:
-        with open(backup_file, 'w', encoding='utf-8') as f:
-            json.dump(result, f, ensure_ascii=False, indent=2)
         if not output_json:
-            print(f"💾 已將最新評估結果儲存至: {backup_file}")
-    except Exception as e:
-        pass
+            print(f"🔹 {test_days} 天營業 MAE: ±{active_mae} 人 | ±5人命中率: {hit_rates['within_5']['active']}%")
 
     if output_json:
-        print(json.dumps(result, ensure_ascii=False))
-    else:
-        print("\n" + "=" * 70)
-        print("📊 【總體回測評估成果】")
+        print(json.dumps(all_results, ensure_ascii=False))
+    elif not output_json:
         print("=" * 70)
-        print(f"🔹 全時段 MAE (平均絕對誤差)  : ±{mae} 人")
-        print(f"🔹 全時段 RMSE (均方根誤差)   : {rmse} 人")
-        print(f"🔹 營業時段 (06-22h) MAE      : ±{active_mae} 人 (RMSE: {active_rmse} 人)")
-        print(f"🔹 晚間尖峰 (17-21h) MAE      : ±{peak_mae} 人")
-        print("-" * 70)
-        print("🎯 【命中率 (Hit Rate / 容許誤差範圍)】")
-        for tol in tolerance_list:
-            hr = hit_rates[f"within_{tol}"]
-            print(f"   誤差在 ±{tol:2d} 人以內: 全時段 {hr['all']:5.1f}% | 營業時段 {hr['active']:5.1f}%")
+        print("✅ 完成所有指定天數回測驗證！")
         print("=" * 70)
 
-    return result
+    return all_results
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="評估過去人流預測準確度")
-    parser.add_argument("--days", type=int, default=7, help="回測驗證的天數 (預設: 7 天)")
+    parser.add_argument("--days", type=int, nargs="+", default=[7, 14, 30], help="回測驗證的天數清單 (預設: 7 14 30)")
     parser.add_argument("--save", action="store_true", help="將評估結果存入資料庫與快照")
     parser.add_argument("--json", action="store_true", help="以純 JSON 格式輸出")
     args = parser.parse_args()
-    evaluate(test_days=args.days, save_to_db=args.save, output_json=args.json)
+    evaluate_all(days_list=args.days, save_to_db=args.save, output_json=args.json)
+

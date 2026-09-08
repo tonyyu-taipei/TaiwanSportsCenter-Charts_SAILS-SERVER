@@ -224,12 +224,18 @@ module.exports = {
   accuracy: async function (req, res) {
     const fs = require('fs');
     const path = require('path');
+    const testDays = parseInt(req.param('days') || '7', 10);
 
-    const getBackupEvaluation = () => {
-      const backupPath = path.join(sails.config.appPath, 'Python', 'accuracy_evaluation.json');
+    const getBackupEvaluation = (days) => {
+      const backupPathDays = path.join(sails.config.appPath, 'Python', `accuracy_evaluation_${days}.json`);
+      const backupPathDefault = path.join(sails.config.appPath, 'Python', 'accuracy_evaluation.json');
       try {
-        if (fs.existsSync(backupPath)) {
-          const raw = fs.readFileSync(backupPath, 'utf-8');
+        if (days && fs.existsSync(backupPathDays)) {
+          const raw = fs.readFileSync(backupPathDays, 'utf-8');
+          return JSON.parse(raw);
+        }
+        if (fs.existsSync(backupPathDefault)) {
+          const raw = fs.readFileSync(backupPathDefault, 'utf-8');
           return JSON.parse(raw);
         }
       } catch (e) {
@@ -246,14 +252,12 @@ module.exports = {
     }
 
     if (!db) {
-      const backup = getBackupEvaluation();
+      const backup = getBackupEvaluation(testDays);
       if (backup) {
         return res.json(backup);
       }
       return res.status(500).json({ error: 'database not available and no backup found' });
     }
-
-    const testDays = parseInt(req.param('days') || '7', 10);
 
     try {
       // 嘗試從 MongoDB accuracy_evaluation collection 讀取評估快照
@@ -279,7 +283,7 @@ module.exports = {
       }
 
       // 若 DB 尚未產生紀錄，讀取本地備份
-      const backup = getBackupEvaluation();
+      const backup = getBackupEvaluation(testDays);
       if (backup) {
         return res.json(backup);
       }
@@ -288,7 +292,7 @@ module.exports = {
         message: 'No accuracy evaluation data available yet. Please trigger evaluate_accuracy.py first.'
       });
     } catch (err) {
-      const backup = getBackupEvaluation();
+      const backup = getBackupEvaluation(testDays);
       if (backup) {
         return res.json(backup);
       }
