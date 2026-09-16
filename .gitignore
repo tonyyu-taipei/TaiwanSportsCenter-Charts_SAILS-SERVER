@@ -142,3 +142,7 @@ __pycache__/
 *$py.class
 venv/
 .venv/
+
+# Model dynamic snapshots & backups
+Python/accuracy_evaluation*.json
+Python/predictions_backup.json
