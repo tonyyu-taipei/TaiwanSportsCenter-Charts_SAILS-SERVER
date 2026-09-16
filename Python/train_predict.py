@@ -341,7 +341,7 @@ def compute_prediction_metadata(X_pred, contribs, weather_data, df_pred_original
     
     # Define categories of features
     categories = {
-        '歷史人流慣性': ['lag_yesterday', 'lag_2days_ago', 'lag_last_week', 'lag_yesterday_trend'],
+        '歷史人流慣性': ['lag_rate_yesterday', 'lag_rate_2days_ago', 'lag_rate_last_week', 'lag_rate_yesterday_trend', 'lag_yesterday', 'lag_2days_ago', 'lag_last_week', 'lag_yesterday_trend'],
         '時間與星期': ['Time_sin', 'Time_cos', 'DayOfWeek_sin', 'DayOfWeek_cos', 'is_weekend', 'hour', 'minute', 'dayofweek'],
         '場館基本屬性': ['maxPeo'] + [col for col in feature_names if col.startswith('location_')],
         '假日與節慶': ['isHoliday'],
@@ -497,16 +497,21 @@ def build_features(df, weather_data=None):
     df['precipitation_sum'] = precip_sums
     df['precipitation_category'] = precip_cats
     
+    # Calculate occupancy rate (target variable, normalized between 0.0 and 1.0+)
+    safe_max_peo = df['maxPeo'].fillna(100).clip(lower=1)
+    df['occupancy_rate'] = (df['peoNum'] / safe_max_peo).clip(lower=0.0, upper=1.2)
+
     # Sort for lag operations
     df = df.sort_values(by=['location', 'time']).reset_index(drop=True)
     
     # 15 minutes step. 1 day = 96 steps, 2 days = 192 steps, 7 days = 672 steps
-    df['lag_yesterday'] = df.groupby('location')['peoNum'].shift(96)
-    df['lag_2days_ago'] = df.groupby('location')['peoNum'].shift(192)
-    df['lag_last_week'] = df.groupby('location')['peoNum'].shift(672)
+    # Lag occupancy rates for normalized cross-gym generalization
+    df['lag_rate_yesterday'] = df.groupby('location')['occupancy_rate'].shift(96)
+    df['lag_rate_2days_ago'] = df.groupby('location')['occupancy_rate'].shift(192)
+    df['lag_rate_last_week'] = df.groupby('location')['occupancy_rate'].shift(672)
     
-    # yesterday trend: rolling average of yesterday's occupancy around this hour
-    df['lag_yesterday_trend'] = df.groupby('location')['lag_yesterday'].transform(
+    # yesterday trend: rolling average of yesterday's occupancy rate around this hour
+    df['lag_rate_yesterday_trend'] = df.groupby('location')['lag_rate_yesterday'].transform(
         lambda x: x.rolling(window=4, min_periods=1).mean()
     )
     
@@ -532,10 +537,10 @@ def main():
     df_features = build_features(df_clean, weather_data=weather_data)
     
     # Drop rows where target label or lags are NaN (first 7 days of historical timeline)
-    train_df = df_features.dropna(subset=['peoNum', 'lag_last_week']).copy()
+    train_df = df_features.dropna(subset=['occupancy_rate', 'lag_rate_last_week']).copy()
     if len(train_df) < 500:
         print("Warning: Insufficient historical rows after lag calculations. Training on all available.")
-        train_df = df_features.dropna(subset=['peoNum', 'lag_yesterday']).copy()
+        train_df = df_features.dropna(subset=['occupancy_rate', 'lag_rate_yesterday']).copy()
         
     if train_df.empty:
         print("Error: No training features could be built. Please verify you have at least 7 days of history.")
@@ -552,18 +557,18 @@ def main():
             
     feature_cols = [
         'Time_sin', 'Time_cos', 'DayOfWeek_sin', 'DayOfWeek_cos', 'is_weekend', 'isHoliday', 'maxPeo',
-        'lag_yesterday', 'lag_2days_ago', 'lag_last_week', 'lag_yesterday_trend',
+        'lag_rate_yesterday', 'lag_rate_2days_ago', 'lag_rate_last_week', 'lag_rate_yesterday_trend',
         'max_temp', 'min_temp', 'avg_temp', 'precipitation_sum', 'precipitation_category'
     ] + location_cols
     
     X_train = train_df_encoded[feature_cols]
-    y_train = train_df_encoded['peoNum']
+    y_train = train_df_encoded['occupancy_rate']
     
-    print("Training XGBoost Regressor...")
+    print("Training XGBoost Regressor (Target: Occupancy Rate)...")
     model = xgb.XGBRegressor(
         n_estimators=300,
         learning_rate=0.05,
-        max_depth=5,
+        max_depth=6,
         subsample=0.8,
         colsample_bytree=0.8,
         random_state=42,
@@ -593,12 +598,14 @@ def main():
                 'time': t,
                 'location': loc,
                 'peoNum': np.nan,
+                'occupancy_rate': np.nan,
                 'maxPeo': latest_max_peo.get(loc, 100)
             })
     future_df = pd.DataFrame(future_rows)
     
     # Keep only the last 8 days of history to compute lags for the future window
     history_subset = df_clean[df_clean['time'] > (T_max - pd.Timedelta(days=8))].copy()
+    history_subset['occupancy_rate'] = (history_subset['peoNum'] / history_subset['maxPeo'].clip(lower=1)).clip(lower=0.0, upper=1.2)
     combined = pd.concat([history_subset, future_df], ignore_index=True)
     combined = combined.sort_values(by=['location', 'time']).reset_index(drop=True)
     
@@ -614,9 +621,10 @@ def main():
             first_24h_df_encoded[col] = 0
             
     X_pred_1 = first_24h_df_encoded[feature_cols]
-    preds_1 = model.predict(X_pred_1)
+    preds_1_rate = model.predict(X_pred_1)
+    preds_1_rate = np.clip(preds_1_rate, 0.0, 1.0)
+    preds_1 = np.round(preds_1_rate * first_24h_df['maxPeo'].values)
     preds_1 = np.clip(preds_1, 0, first_24h_df['maxPeo'].values)
-    preds_1 = np.round(preds_1)
     
     # Contributions and factor breakdown
     dmat_1 = xgb.DMatrix(X_pred_1)
@@ -625,6 +633,7 @@ def main():
     
     # Update combined dataframe with step 1 predictions & metadata
     first_24h_df['peoNum'] = preds_1
+    first_24h_df['occupancy_rate'] = preds_1_rate
     first_24h_df['dominantFactor'] = [m['dominantFactor'] for m in metadata_1]
     first_24h_df['weather'] = [m['weather'] for m in metadata_1]
     first_24h_df['factors'] = [m['factors'] for m in metadata_1]
@@ -635,7 +644,7 @@ def main():
     
     combined.set_index(['location', 'time'], inplace=True)
     first_24h_df.set_index(['location', 'time'], inplace=True)
-    combined.update(first_24h_df[['peoNum', 'dominantFactor', 'weather', 'factors']])
+    combined.update(first_24h_df[['peoNum', 'occupancy_rate', 'dominantFactor', 'weather', 'factors']])
     combined.reset_index(inplace=True)
     
     # Step 2: Predict second 24 hours of future timeline (uses predicted lags from step 1)
@@ -650,9 +659,10 @@ def main():
             second_24h_df_encoded[col] = 0
             
     X_pred_2 = second_24h_df_encoded[feature_cols]
-    preds_2 = model.predict(X_pred_2)
+    preds_2_rate = model.predict(X_pred_2)
+    preds_2_rate = np.clip(preds_2_rate, 0.0, 1.0)
+    preds_2 = np.round(preds_2_rate * second_24h_df['maxPeo'].values)
     preds_2 = np.clip(preds_2, 0, second_24h_df['maxPeo'].values)
-    preds_2 = np.round(preds_2)
     
     # Contributions and factor breakdown
     dmat_2 = xgb.DMatrix(X_pred_2)
@@ -661,13 +671,14 @@ def main():
     
     # Update combined dataframe with step 2 predictions & metadata
     second_24h_df['peoNum'] = preds_2
+    second_24h_df['occupancy_rate'] = preds_2_rate
     second_24h_df['dominantFactor'] = [m['dominantFactor'] for m in metadata_2]
     second_24h_df['weather'] = [m['weather'] for m in metadata_2]
     second_24h_df['factors'] = [m['factors'] for m in metadata_2]
     
     combined.set_index(['location', 'time'], inplace=True)
     second_24h_df.set_index(['location', 'time'], inplace=True)
-    combined.update(second_24h_df[['peoNum', 'dominantFactor', 'weather', 'factors']])
+    combined.update(second_24h_df[['peoNum', 'occupancy_rate', 'dominantFactor', 'weather', 'factors']])
     combined.reset_index(inplace=True)
     
     # --- Format and Save Predictions ---

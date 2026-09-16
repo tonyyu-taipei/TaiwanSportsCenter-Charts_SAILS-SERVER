@@ -53,9 +53,9 @@ def evaluate_all(days_list=[7, 14, 30], tolerance_list=[3, 5, 10], save_to_db=Fa
         print("📊 建立特徵工程特徵...")
     df_features = build_features(df_clean, weather_data=weather_data)
 
-    df_valid = df_features.dropna(subset=['peoNum', 'lag_last_week']).copy()
+    df_valid = df_features.dropna(subset=['occupancy_rate', 'lag_rate_last_week']).copy()
     if len(df_valid) < 500:
-        df_valid = df_features.dropna(subset=['peoNum', 'lag_yesterday']).copy()
+        df_valid = df_features.dropna(subset=['occupancy_rate', 'lag_rate_yesterday']).copy()
 
     max_time = df_valid['time'].max()
     all_results = {}
@@ -87,19 +87,19 @@ def evaluate_all(days_list=[7, 14, 30], tolerance_list=[3, 5, 10], save_to_db=Fa
 
         feature_cols = [
             'Time_sin', 'Time_cos', 'DayOfWeek_sin', 'DayOfWeek_cos', 'is_weekend', 'isHoliday', 'maxPeo',
-            'lag_yesterday', 'lag_2days_ago', 'lag_last_week', 'lag_yesterday_trend',
+            'lag_rate_yesterday', 'lag_rate_2days_ago', 'lag_rate_last_week', 'lag_rate_yesterday_trend',
             'max_temp', 'min_temp', 'avg_temp', 'precipitation_sum', 'precipitation_category'
         ] + location_cols
 
         X_train = train_encoded[feature_cols]
-        y_train = train_encoded['peoNum']
+        y_train = train_encoded['occupancy_rate']
         X_test = test_encoded[feature_cols]
-        y_test = test_encoded['peoNum']
+        y_test = test_encoded['occupancy_rate']
 
         model = xgb.XGBRegressor(
             n_estimators=300,
             learning_rate=0.05,
-            max_depth=5,
+            max_depth=6,
             subsample=0.8,
             colsample_bytree=0.8,
             random_state=42,
@@ -107,9 +107,10 @@ def evaluate_all(days_list=[7, 14, 30], tolerance_list=[3, 5, 10], save_to_db=Fa
         )
         model.fit(X_train, y_train)
 
-        preds = model.predict(X_test)
+        pred_rates = model.predict(X_test)
+        pred_rates = np.clip(pred_rates, 0.0, 1.0)
+        preds = np.round(pred_rates * test_df['maxPeo'].values)
         preds = np.clip(preds, 0, test_df['maxPeo'].values)
-        preds = np.round(preds)
 
         test_df['predicted'] = preds
         test_df['abs_error'] = np.abs(test_df['peoNum'] - test_df['predicted'])
@@ -146,6 +147,13 @@ def evaluate_all(days_list=[7, 14, 30], tolerance_list=[3, 5, 10], save_to_db=Fa
             l_hit5 = float(round((loc_active['abs_error'] <= 5).mean() * 100, 1)) if not loc_active.empty else 0.0
             l_hit3 = float(round((loc_active['abs_error'] <= 3).mean() * 100, 1)) if not loc_active.empty else 0.0
 
+            # 容量相對百分比誤差與相對容許命中率（考量大容量場館如健工）
+            max_peo_val = loc_active['maxPeo'].iloc[0] if not loc_active.empty else 100
+            rate_err = float(round((loc_active['abs_error'] / max(max_peo_val, 1)).mean() * 100, 2)) if not loc_active.empty else 0.0
+            # 容許 5% 容量或 ±5 人
+            rel_tol = max(5.0, max_peo_val * 0.05)
+            l_hit_pct = float(round((loc_active['abs_error'] <= rel_tol).mean() * 100, 1)) if not loc_active.empty else 0.0
+
             locations_metrics.append({
                 'short': loc,
                 'sampleCount': int(len(grp)),
@@ -153,7 +161,9 @@ def evaluate_all(days_list=[7, 14, 30], tolerance_list=[3, 5, 10], save_to_db=Fa
                 'activeHoursMae': l_act_mae,
                 'peakHoursMae': l_peak_mae,
                 'hitRateWithin5': l_hit5,
-                'hitRateWithin3': l_hit3
+                'hitRateWithin3': l_hit3,
+                'occupancyRateMaePct': rate_err,
+                'hitRateWithinCapacityPct': l_hit_pct
             })
 
         locations_metrics.sort(key=lambda x: x['activeHoursMae'])

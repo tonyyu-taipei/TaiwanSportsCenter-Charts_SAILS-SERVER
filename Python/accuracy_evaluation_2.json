@@ -1,0 +1,615 @@
+{
+  "evaluatedAt": "2026-09-16T09:09:13.112742",
+  "testDays": 2,
+  "timeRange": {
+    "start": "2026-09-14T09:00:00",
+    "end": "2026-09-16T09:00:00"
+  },
+  "totalSamples": 7501,
+  "summary": {
+    "overallMae": 8.0,
+    "overallRmse": 11.79,
+    "activeHoursMae": 8.78,
+    "activeHoursRmse": 13.3,
+    "peakHoursMae": 8.78
+  },
+  "hitRates": {
+    "within_3": {
+      "all": 36.0,
+      "active": 37.0
+    },
+    "within_5": {
+      "all": 49.1,
+      "active": 47.5
+    },
+    "within_10": {
+      "all": 72.5,
+      "active": 68.7
+    }
+  },
+  "locations": [
+    {
+      "short": "SJRF",
+      "sampleCount": 161,
+      "allDayMae": 2.3,
+      "activeHoursMae": 2.13,
+      "peakHoursMae": 2.13,
+      "hitRateWithin5": 91.4,
+      "hitRateWithin3": 74.3,
+      "occupancyRateMaePct": 3.05,
+      "hitRateWithinCapacityPct": 91.4
+    },
+    {
+      "short": "PQFN",
+      "sampleCount": 161,
+      "allDayMae": 3.0,
+      "activeHoursMae": 2.92,
+      "peakHoursMae": 2.92,
+      "hitRateWithin5": 83.8,
+      "hitRateWithin3": 72.4,
+      "occupancyRateMaePct": 4.17,
+      "hitRateWithinCapacityPct": 83.8
+    },
+    {
+      "short": "ZSSC",
+      "sampleCount": 161,
+      "allDayMae": 4.16,
+      "activeHoursMae": 3.42,
+      "peakHoursMae": 3.42,
+      "hitRateWithin5": 74.3,
+      "hitRateWithin3": 61.9,
+      "occupancyRateMaePct": 6.84,
+      "hitRateWithinCapacityPct": 74.3
+    },
+    {
+      "short": "BTSC",
+      "sampleCount": 161,
+      "allDayMae": 3.58,
+      "activeHoursMae": 3.5,
+      "peakHoursMae": 3.5,
+      "hitRateWithin5": 68.6,
+      "hitRateWithin3": 55.2,
+      "occupancyRateMaePct": 5.83,
+      "hitRateWithinCapacityPct": 68.6
+    },
+    {
+      "short": "HC110",
+      "sampleCount": 161,
+      "allDayMae": 3.28,
+      "activeHoursMae": 3.62,
+      "peakHoursMae": 3.62,
+      "hitRateWithin5": 77.1,
+      "hitRateWithin3": 59.0,
+      "occupancyRateMaePct": 1.9,
+      "hitRateWithinCapacityPct": 91.4
+    },
+    {
+      "short": "HC45",
+      "sampleCount": 161,
+      "allDayMae": 3.89,
+      "activeHoursMae": 3.99,
+      "peakHoursMae": 3.99,
+      "hitRateWithin5": 74.3,
+      "hitRateWithin3": 55.2,
+      "occupancyRateMaePct": 1.23,
+      "hitRateWithinCapacityPct": 98.1
+    },
+    {
+      "short": "DTSC",
+      "sampleCount": 161,
+      "allDayMae": 4.72,
+      "activeHoursMae": 4.54,
+      "peakHoursMae": 4.54,
+      "hitRateWithin5": 64.8,
+      "hitRateWithin3": 51.4,
+      "occupancyRateMaePct": 5.68,
+      "hitRateWithinCapacityPct": 64.8
+    },
+    {
+      "short": "RFFN",
+      "sampleCount": 161,
+      "allDayMae": 4.76,
+      "activeHoursMae": 5.06,
+      "peakHoursMae": 5.06,
+      "hitRateWithin5": 58.1,
+      "hitRateWithin3": 48.6,
+      "occupancyRateMaePct": 5.06,
+      "hitRateWithinCapacityPct": 58.1
+    },
+    {
+      "short": "TYSC",
+      "sampleCount": 161,
+      "allDayMae": 4.66,
+      "activeHoursMae": 5.07,
+      "peakHoursMae": 5.07,
+      "hitRateWithin5": 65.7,
+      "hitRateWithin3": 50.5,
+      "occupancyRateMaePct": 6.33,
+      "hitRateWithinCapacityPct": 65.7
+    },
+    {
+      "short": "DASC",
+      "sampleCount": 161,
+      "allDayMae": 4.99,
+      "activeHoursMae": 5.35,
+      "peakHoursMae": 5.35,
+      "hitRateWithin5": 61.0,
+      "hitRateWithin3": 50.5,
+      "occupancyRateMaePct": 6.69,
+      "hitRateWithinCapacityPct": 61.0
+    },
+    {
+      "short": "SCSC",
+      "sampleCount": 161,
+      "allDayMae": 5.19,
+      "activeHoursMae": 5.47,
+      "peakHoursMae": 5.47,
+      "hitRateWithin5": 54.3,
+      "hitRateWithin3": 45.7,
+      "occupancyRateMaePct": 9.11,
+      "hitRateWithinCapacityPct": 54.3
+    },
+    {
+      "short": "HC114",
+      "sampleCount": 161,
+      "allDayMae": 6.04,
+      "activeHoursMae": 5.82,
+      "peakHoursMae": 5.82,
+      "hitRateWithin5": 61.9,
+      "hitRateWithin3": 52.4,
+      "occupancyRateMaePct": 4.65,
+      "hitRateWithinCapacityPct": 61.9
+    },
+    {
+      "short": "HC68",
+      "sampleCount": 161,
+      "allDayMae": 5.21,
+      "activeHoursMae": 5.88,
+      "peakHoursMae": 5.88,
+      "hitRateWithin5": 57.1,
+      "hitRateWithin3": 45.7,
+      "occupancyRateMaePct": 1.81,
+      "hitRateWithinCapacityPct": 96.2
+    },
+    {
+      "short": "XYSC",
+      "sampleCount": 161,
+      "allDayMae": 5.43,
+      "activeHoursMae": 5.89,
+      "peakHoursMae": 5.89,
+      "hitRateWithin5": 45.7,
+      "hitRateWithin3": 34.3,
+      "occupancyRateMaePct": 9.07,
+      "hitRateWithinCapacityPct": 45.7
+    },
+    {
+      "short": "LZSC",
+      "sampleCount": 161,
+      "allDayMae": 6.08,
+      "activeHoursMae": 6.32,
+      "peakHoursMae": 6.32,
+      "hitRateWithin5": 57.1,
+      "hitRateWithin3": 43.8,
+      "occupancyRateMaePct": 10.54,
+      "hitRateWithinCapacityPct": 57.1
+    },
+    {
+      "short": "WSSC",
+      "sampleCount": 161,
+      "allDayMae": 5.64,
+      "activeHoursMae": 6.41,
+      "peakHoursMae": 6.41,
+      "hitRateWithin5": 59.0,
+      "hitRateWithin3": 45.7,
+      "occupancyRateMaePct": 5.83,
+      "hitRateWithinCapacityPct": 59.0
+    },
+    {
+      "short": "FF080",
+      "sampleCount": 118,
+      "allDayMae": 6.08,
+      "activeHoursMae": 6.42,
+      "peakHoursMae": 6.42,
+      "hitRateWithin5": 53.8,
+      "hitRateWithin3": 40.0,
+      "occupancyRateMaePct": 3.21,
+      "hitRateWithinCapacityPct": 86.2
+    },
+    {
+      "short": "SLSC",
+      "sampleCount": 161,
+      "allDayMae": 6.96,
+      "activeHoursMae": 6.64,
+      "peakHoursMae": 6.64,
+      "hitRateWithin5": 59.0,
+      "hitRateWithin3": 48.6,
+      "occupancyRateMaePct": 6.64,
+      "hitRateWithinCapacityPct": 59.0
+    },
+    {
+      "short": "NHSC",
+      "sampleCount": 161,
+      "allDayMae": 7.43,
+      "activeHoursMae": 6.66,
+      "peakHoursMae": 6.66,
+      "hitRateWithin5": 56.2,
+      "hitRateWithin3": 46.7,
+      "occupancyRateMaePct": 5.12,
+      "hitRateWithinCapacityPct": 59.0
+    },
+    {
+      "short": "LKSC",
+      "sampleCount": 161,
+      "allDayMae": 6.76,
+      "activeHoursMae": 6.79,
+      "peakHoursMae": 6.79,
+      "hitRateWithin5": 49.5,
+      "hitRateWithin3": 41.9,
+      "occupancyRateMaePct": 8.49,
+      "hitRateWithinCapacityPct": 49.5
+    },
+    {
+      "short": "CMSC",
+      "sampleCount": 161,
+      "allDayMae": 6.86,
+      "activeHoursMae": 7.09,
+      "peakHoursMae": 7.09,
+      "hitRateWithin5": 49.5,
+      "hitRateWithin3": 39.0,
+      "occupancyRateMaePct": 8.86,
+      "hitRateWithinCapacityPct": 49.5
+    },
+    {
+      "short": "HC91",
+      "sampleCount": 161,
+      "allDayMae": 7.44,
+      "activeHoursMae": 7.3,
+      "peakHoursMae": 7.3,
+      "hitRateWithin5": 52.4,
+      "hitRateWithin3": 42.9,
+      "occupancyRateMaePct": 0.86,
+      "hitRateWithinCapacityPct": 100.0
+    },
+    {
+      "short": "JJSC",
+      "sampleCount": 161,
+      "allDayMae": 8.17,
+      "activeHoursMae": 7.3,
+      "peakHoursMae": 7.3,
+      "hitRateWithin5": 54.3,
+      "hitRateWithin3": 43.8,
+      "occupancyRateMaePct": 4.87,
+      "hitRateWithinCapacityPct": 61.9
+    },
+    {
+      "short": "HC108",
+      "sampleCount": 161,
+      "allDayMae": 7.38,
+      "activeHoursMae": 7.32,
+      "peakHoursMae": 7.32,
+      "hitRateWithin5": 43.8,
+      "hitRateWithin3": 38.1,
+      "occupancyRateMaePct": 2.26,
+      "hitRateWithinCapacityPct": 94.3
+    },
+    {
+      "short": "HC118",
+      "sampleCount": 161,
+      "allDayMae": 6.83,
+      "activeHoursMae": 7.52,
+      "peakHoursMae": 7.52,
+      "hitRateWithin5": 56.2,
+      "hitRateWithin3": 47.6,
+      "occupancyRateMaePct": 0.75,
+      "hitRateWithinCapacityPct": 100.0
+    },
+    {
+      "short": "NTSC",
+      "sampleCount": 161,
+      "allDayMae": 6.77,
+      "activeHoursMae": 7.73,
+      "peakHoursMae": 7.73,
+      "hitRateWithin5": 47.6,
+      "hitRateWithin3": 42.9,
+      "occupancyRateMaePct": 6.44,
+      "hitRateWithinCapacityPct": 53.3
+    },
+    {
+      "short": "SSSC",
+      "sampleCount": 161,
+      "allDayMae": 9.66,
+      "activeHoursMae": 7.76,
+      "peakHoursMae": 7.76,
+      "hitRateWithin5": 48.6,
+      "hitRateWithin3": 36.2,
+      "occupancyRateMaePct": 7.76,
+      "hitRateWithinCapacityPct": 48.6
+    },
+    {
+      "short": "NGSC",
+      "sampleCount": 161,
+      "allDayMae": 7.96,
+      "activeHoursMae": 7.98,
+      "peakHoursMae": 7.98,
+      "hitRateWithin5": 53.3,
+      "hitRateWithin3": 41.9,
+      "occupancyRateMaePct": 7.98,
+      "hitRateWithinCapacityPct": 53.3
+    },
+    {
+      "short": "FF033",
+      "sampleCount": 118,
+      "allDayMae": 7.57,
+      "activeHoursMae": 8.12,
+      "peakHoursMae": 8.12,
+      "hitRateWithin5": 49.2,
+      "hitRateWithin3": 27.7,
+      "occupancyRateMaePct": 3.12,
+      "hitRateWithinCapacityPct": 81.5
+    },
+    {
+      "short": "FF103",
+      "sampleCount": 118,
+      "allDayMae": 7.02,
+      "activeHoursMae": 8.15,
+      "peakHoursMae": 8.15,
+      "hitRateWithin5": 40.0,
+      "hitRateWithin3": 29.2,
+      "occupancyRateMaePct": 4.08,
+      "hitRateWithinCapacityPct": 73.8
+    },
+    {
+      "short": "FF068",
+      "sampleCount": 118,
+      "allDayMae": 7.81,
+      "activeHoursMae": 8.57,
+      "peakHoursMae": 8.57,
+      "hitRateWithin5": 29.2,
+      "hitRateWithin3": 18.5,
+      "occupancyRateMaePct": 4.66,
+      "hitRateWithinCapacityPct": 56.9
+    },
+    {
+      "short": "FF078",
+      "sampleCount": 118,
+      "allDayMae": 8.37,
+      "activeHoursMae": 9.17,
+      "peakHoursMae": 9.17,
+      "hitRateWithin5": 40.0,
+      "hitRateWithin3": 27.7,
+      "occupancyRateMaePct": 4.33,
+      "hitRateWithinCapacityPct": 72.3
+    },
+    {
+      "short": "FF049",
+      "sampleCount": 118,
+      "allDayMae": 7.28,
+      "activeHoursMae": 9.41,
+      "peakHoursMae": 9.41,
+      "hitRateWithin5": 41.5,
+      "hitRateWithin3": 32.3,
+      "occupancyRateMaePct": 5.23,
+      "hitRateWithinCapacityPct": 56.9
+    },
+    {
+      "short": "FF015",
+      "sampleCount": 118,
+      "allDayMae": 9.87,
+      "activeHoursMae": 9.86,
+      "peakHoursMae": 9.86,
+      "hitRateWithin5": 40.0,
+      "hitRateWithin3": 21.5,
+      "occupancyRateMaePct": 3.29,
+      "hitRateWithinCapacityPct": 76.9
+    },
+    {
+      "short": "FF032",
+      "sampleCount": 118,
+      "allDayMae": 8.51,
+      "activeHoursMae": 9.91,
+      "peakHoursMae": 9.91,
+      "hitRateWithin5": 46.2,
+      "hitRateWithin3": 33.8,
+      "occupancyRateMaePct": 2.9,
+      "hitRateWithinCapacityPct": 81.5
+    },
+    {
+      "short": "FF028",
+      "sampleCount": 118,
+      "allDayMae": 7.88,
+      "activeHoursMae": 10.2,
+      "peakHoursMae": 10.2,
+      "hitRateWithin5": 21.5,
+      "hitRateWithin3": 10.8,
+      "occupancyRateMaePct": 5.61,
+      "hitRateWithinCapacityPct": 36.9
+    },
+    {
+      "short": "FF054",
+      "sampleCount": 118,
+      "allDayMae": 9.34,
+      "activeHoursMae": 10.57,
+      "peakHoursMae": 10.57,
+      "hitRateWithin5": 33.8,
+      "hitRateWithin3": 23.1,
+      "occupancyRateMaePct": 2.78,
+      "hitRateWithinCapacityPct": 87.7
+    },
+    {
+      "short": "FF101",
+      "sampleCount": 118,
+      "allDayMae": 8.6,
+      "activeHoursMae": 10.82,
+      "peakHoursMae": 10.82,
+      "hitRateWithin5": 24.6,
+      "hitRateWithin3": 16.9,
+      "occupancyRateMaePct": 3.34,
+      "hitRateWithinCapacityPct": 80.0
+    },
+    {
+      "short": "FF027",
+      "sampleCount": 118,
+      "allDayMae": 10.57,
+      "activeHoursMae": 11.76,
+      "peakHoursMae": 11.76,
+      "hitRateWithin5": 15.4,
+      "hitRateWithin3": 6.2,
+      "occupancyRateMaePct": 3.97,
+      "hitRateWithinCapacityPct": 67.7
+    },
+    {
+      "short": "FF073",
+      "sampleCount": 118,
+      "allDayMae": 10.32,
+      "activeHoursMae": 12.1,
+      "peakHoursMae": 12.1,
+      "hitRateWithin5": 15.4,
+      "hitRateWithin3": 7.7,
+      "occupancyRateMaePct": 3.67,
+      "hitRateWithinCapacityPct": 80.0
+    },
+    {
+      "short": "FF071",
+      "sampleCount": 118,
+      "allDayMae": 9.66,
+      "activeHoursMae": 12.56,
+      "peakHoursMae": 12.56,
+      "hitRateWithin5": 27.7,
+      "hitRateWithin3": 18.5,
+      "occupancyRateMaePct": 5.84,
+      "hitRateWithinCapacityPct": 50.8
+    },
+    {
+      "short": "FF067",
+      "sampleCount": 118,
+      "allDayMae": 10.61,
+      "activeHoursMae": 12.68,
+      "peakHoursMae": 12.68,
+      "hitRateWithin5": 33.8,
+      "hitRateWithin3": 18.5,
+      "occupancyRateMaePct": 3.6,
+      "hitRateWithinCapacityPct": 72.3
+    },
+    {
+      "short": "FF048",
+      "sampleCount": 118,
+      "allDayMae": 11.4,
+      "activeHoursMae": 13.09,
+      "peakHoursMae": 13.09,
+      "hitRateWithin5": 33.8,
+      "hitRateWithin3": 23.1,
+      "occupancyRateMaePct": 3.97,
+      "hitRateWithinCapacityPct": 73.8
+    },
+    {
+      "short": "FF065",
+      "sampleCount": 118,
+      "allDayMae": 13.39,
+      "activeHoursMae": 13.65,
+      "peakHoursMae": 13.65,
+      "hitRateWithin5": 24.6,
+      "hitRateWithin3": 16.9,
+      "occupancyRateMaePct": 3.1,
+      "hitRateWithinCapacityPct": 78.5
+    },
+    {
+      "short": "FFX001",
+      "sampleCount": 118,
+      "allDayMae": 10.77,
+      "activeHoursMae": 13.88,
+      "peakHoursMae": 13.88,
+      "hitRateWithin5": 20.0,
+      "hitRateWithin3": 12.3,
+      "occupancyRateMaePct": 3.47,
+      "hitRateWithinCapacityPct": 80.0
+    },
+    {
+      "short": "FF010",
+      "sampleCount": 118,
+      "allDayMae": 11.28,
+      "activeHoursMae": 13.97,
+      "peakHoursMae": 13.97,
+      "hitRateWithin5": 18.5,
+      "hitRateWithin3": 15.4,
+      "occupancyRateMaePct": 4.46,
+      "hitRateWithinCapacityPct": 61.5
+    },
+    {
+      "short": "ZBSC",
+      "sampleCount": 161,
+      "allDayMae": 13.35,
+      "activeHoursMae": 15.3,
+      "peakHoursMae": 15.3,
+      "hitRateWithin5": 27.6,
+      "hitRateWithin3": 27.6,
+      "occupancyRateMaePct": 15.3,
+      "hitRateWithinCapacityPct": 27.6
+    },
+    {
+      "short": "FF037",
+      "sampleCount": 118,
+      "allDayMae": 12.94,
+      "activeHoursMae": 16.21,
+      "peakHoursMae": 16.21,
+      "hitRateWithin5": 13.8,
+      "hitRateWithin3": 10.8,
+      "occupancyRateMaePct": 4.85,
+      "hitRateWithinCapacityPct": 61.5
+    },
+    {
+      "short": "FF009",
+      "sampleCount": 118,
+      "allDayMae": 13.5,
+      "activeHoursMae": 16.36,
+      "peakHoursMae": 16.36,
+      "hitRateWithin5": 18.5,
+      "hitRateWithin3": 12.3,
+      "occupancyRateMaePct": 4.76,
+      "hitRateWithinCapacityPct": 70.8
+    },
+    {
+      "short": "FF090",
+      "sampleCount": 118,
+      "allDayMae": 17.03,
+      "activeHoursMae": 20.76,
+      "peakHoursMae": 20.76,
+      "hitRateWithin5": 12.3,
+      "hitRateWithin3": 7.7,
+      "occupancyRateMaePct": 4.83,
+      "hitRateWithinCapacityPct": 64.6
+    },
+    {
+      "short": "FF053",
+      "sampleCount": 161,
+      "allDayMae": 17.89,
+      "activeHoursMae": 22.84,
+      "peakHoursMae": 22.84,
+      "hitRateWithin5": 18.1,
+      "hitRateWithin3": 7.6,
+      "occupancyRateMaePct": 6.53,
+      "hitRateWithinCapacityPct": 49.5
+    },
+    {
+      "short": "FF069",
+      "sampleCount": 118,
+      "allDayMae": 16.97,
+      "activeHoursMae": 24.84,
+      "peakHoursMae": 24.84,
+      "hitRateWithin5": 6.2,
+      "hitRateWithin3": 3.1,
+      "occupancyRateMaePct": 8.28,
+      "hitRateWithinCapacityPct": 38.5
+    },
+    {
+      "short": "FF020",
+      "sampleCount": 118,
+      "allDayMae": 17.81,
+      "activeHoursMae": 26.05,
+      "peakHoursMae": 26.05,
+      "hitRateWithin5": 7.7,
+      "hitRateWithin3": 3.1,
+      "occupancyRateMaePct": 10.42,
+      "hitRateWithinCapacityPct": 29.2
+    }
+  ]
+}
